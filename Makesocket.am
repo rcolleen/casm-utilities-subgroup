@@ -1,0 +1,5 @@
+bin_PROGRAMS += _casmutils-subgroups
+
+_casmutils_subgroups_SOURCES = plugins/casm-utilities-subgroups/main.cpp
+
+_casmutils_subgroups_LDADD= libcasmutils.la
