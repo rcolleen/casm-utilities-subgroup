@@ -1,5 +1,5 @@
-#include "./fastsymmetry.hpp"
-#include "./symmetry.hpp"
+#include "../include/casmutils/sym/fastsymmetry.hpp"
+#include <casmutils/sym/cartesian.hpp>
 
 AbstractSymOp::AbstractSymOp(int id, std::shared_ptr<MultTable> multiplication_table_ptr) : id(id), multiplication_table_ptr(multiplication_table_ptr) {}
 int AbstractSymOp::get_id() const { return this->id; }
@@ -27,16 +27,16 @@ bool AbstractSymOpCompare_f::operator()(const AbstractSymOp& element2) const
     return (input1_id == element2.get_id() && table_ptr == element2.mult_table_ptr());
 }
 
-std::vector<std::vector<int>> make_multiplication_table(const std::vector<SymOp>& group, double tol) 
+std::vector<std::vector<int>> make_multiplication_table(const std::vector<casmutils::sym::CartOp>& group, double tol) 
 {
     MultTable multiplication_table;
-    for (const SymOp& operation1 : group) 
+    for (const casmutils::sym::CartOp& operation1 : group) 
     {
         std::vector<int> temp_index_vector;
-        for (const SymOp& operation2 : group) 
+        for (const casmutils::sym::CartOp& operation2 : group) 
         {
-            SymOp temp_product = operation1 * operation2;
-            SymOpCompare_f compare(temp_product,tol);
+            casmutils::sym::CartOp temp_product = operation1 * operation2;
+            CartOpCompare_f compare(temp_product,tol);
             auto temp_product_it = std::find_if(group.begin(), group.end(), compare);
             int temp_product_id=std::distance(group.begin(), temp_product_it);
             temp_index_vector.push_back(temp_product_id);
@@ -55,7 +55,7 @@ bool BinaryAbstractComparator_f::operator()(const AbstractSymOp& lhs, const Abst
 }
 
 //TODO: This will eventually change to return a SymGroup
-SymGroup<AbstractSymOp, BinaryAbstractComparator_f> transform_representation(const SymGroup<SymOp, CartesianBinaryComparator_f>& cartesian_group, double tol) 
+SymGroup<AbstractSymOp, BinaryAbstractComparator_f> transform_representation(const SymGroup<casmutils::sym::CartOp, CartesianBinaryComparator_f>& cartesian_group, double tol) 
 {
     MultTable multiplication_table = make_multiplication_table(cartesian_group.operations(), tol);
     BinaryAbstractComparator_f comp;

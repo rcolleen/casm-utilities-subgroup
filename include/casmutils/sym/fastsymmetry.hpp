@@ -39,7 +39,7 @@ private:
     const std::shared_ptr<MultTable> table_ptr;
 };
 
-std::vector<std::vector<int>> make_multiplication_table(const std::vector<CartOp>& group, double tol);
+std::vector<std::vector<int>> make_multiplication_table(const std::vector<casmutils::sym::CartOp>& group, double tol);
 
 
 class BinaryAbstractComparator_f
@@ -48,5 +48,5 @@ public:
     bool operator()(const AbstractSymOp& lhs, const AbstractSymOp& rhs) const;
 };
 
-SymGroup<AbstractSymOp, BinaryAbstractComparator_f> transform_representation(const SymGroup<CartOp, CartesianBinaryComparator_f>& cartesian_group, double tol);
+SymGroup<AbstractSymOp, BinaryAbstractComparator_f> transform_representation(const SymGroup<casmutils::sym::CartOp, CartesianBinaryComparator_f>& cartesian_group, double tol);
 #endif
