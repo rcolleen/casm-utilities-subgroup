@@ -1,13 +1,11 @@
 #ifndef SYMOP_H
 #define SYMOP_H
 
-#include "../../submodules/eigen-git-mirror/Eigen/Core"
-#include "../../submodules/eigen-git-mirror/Eigen/Dense"
+#include <casmutils/xtal/coordinate.hpp>
 #include <casmutils/xtal/lattice.hpp>
 #include <casmutils/sym/cartesian.hpp>
 #include <string>
 #include <vector>
-#include "lattice.hpp"
 
 //class CartOp
 //{
@@ -31,11 +29,11 @@
 struct CartOpCompare_f
 {
 
-    CartOpCompare_f(CartOp input1, double tol=1e-5);
-    bool operator()(const CartOp& element2) const;
+    CartOpCompare_f(casmutils::sym::CartOp input1, double tol=1e-5);
+    bool operator()(const casmutils::sym::CartOp& element2) const;
 
 private:
-    const CartOp element1;
+    const casmutils::sym::CartOp element1;
     double tol;
 };
 
@@ -44,7 +42,7 @@ class CartesianBinaryComparator_f
 {
     public:
             CartesianBinaryComparator_f(double tol);
-            bool operator()(const CartOp& element1, const CartOp& element2) const;
+            bool operator()(const casmutils::sym::CartOp& element1, const casmutils::sym::CartOp& element2) const;
     private:
             double tol;
 };
@@ -52,23 +50,23 @@ class CartesianBinaryComparator_f
 class BinaryCartOpPeriodicCompare_f
 {
 	public:
-		BinaryCartOpPeriodicCompare_f(const Lattice& lattice, double tol);
-		bool operator()(const CartOp& element1, const CartOp& element2) const;
+		BinaryCartOpPeriodicCompare_f(const casmutils::xtal::Lattice& lattice, double tol);
+		bool operator()(const casmutils::sym::CartOp& element1, const casmutils::sym::CartOp& element2) const;
 	private:
 		double tol;
-		Lattice m_lattice;
+        casmutils::xtal::Lattice m_lattice;
 };
 
 class BinaryCartOpPeriodicMultiplier_f
 {
     public:
-        BinaryCartOpPeriodicMultiplier_f(const Lattice& lattice, double tol);
-        CartOp operator()(const CartOp& operation1, const CartOp& operation2) const;
+        BinaryCartOpPeriodicMultiplier_f(const casmutils::xtal::Lattice& lattice, double tol);
+        casmutils::sym::CartOp operator()(const casmutils::sym::CartOp& operation1, const casmutils::sym::CartOp& operation2) const;
     private:
-        Lattice m_lattice;
+        casmutils::xtal::Lattice m_lattice;
         double tol;
 };
 
-bool operator==(const CartOp& lhs, const CartOp& rhs);
+bool operator==(const casmutils::sym::CartOp& lhs, const casmutils::sym::CartOp& rhs);
 
 #endif

@@ -1,69 +1,63 @@
-#include "symop.hpp"
-#include "site.hpp"
-#include "coordinate.hpp"
-#include "lattice.hpp"
+#include <casmutils/sym/cartesian.hpp>
+#include <casmutils/xtal/coordinate.hpp>
+#include <casmutils/xtal/site.hpp>
+#include <casmutils/xtal/lattice.hpp>
 
-SymOp::SymOp(const Eigen::Matrix3d& cart_matrix, const Eigen::Vector3d& translation)
-    : m_cart_matrix(cart_matrix), m_translation(translation)
-{
-}
-Eigen::Vector3d SymOp::get_translation() const { return this->m_translation; }
-Eigen::Matrix3d SymOp::get_cart_matrix() const { return this->m_cart_matrix; }
-
-SymOp operator*(const SymOp& lhs, const SymOp& rhs)
-{
-    Eigen::Vector3d translation = lhs.get_cart_matrix() * rhs.get_translation() + lhs.get_translation();
-    Eigen::Matrix3d product = lhs.get_cart_matrix() * rhs.get_cart_matrix();
-    SymOp symop_product(product, translation);
-    return symop_product;
-}
-
-
+//
+//CartOp operator*(const CartOp& lhs, const CartOp& rhs)
+//{
+//    Eigen::Vector3d translation = lhs.matrix * rhs.translation + lhs.translation;
+//    Eigen::Matrix3d product = lhs.matrix * rhs.matrix;
+//    CartOp symop_product(product, translation);
+//    return symop_product;
+//}
+//
+//
 //TODO: Make this disappear
-SymOpCompare_f::SymOpCompare_f(SymOp input1, double tol) : element1(input1), tol(tol) {}
+CartOpCompare_f::CartOpCompare_f(casmutils::sym::CartOp input1, double tol) : element1(input1), tol(tol) {}
 
-bool SymOpCompare_f::operator()(const SymOp& element2) const
+bool CartOpCompare_f::operator()(const casmutils::sym::CartOp& element2) const
 {
-    return (element1.get_cart_matrix().isApprox(element2.get_cart_matrix(), tol) &&
-            (element1.get_translation().isApprox(element2.get_translation(), tol)));
+    return (element1.matrix.isApprox(element2.matrix, tol) &&
+            (element1.translation.isApprox(element2.translation, tol)));
 }
 
 CartesianBinaryComparator_f::CartesianBinaryComparator_f(double tol) : tol(tol) {}
 
-bool CartesianBinaryComparator_f::operator()(const SymOp& element1, const SymOp& element2) const
+bool CartesianBinaryComparator_f::operator()(const casmutils::sym::CartOp& element1, const casmutils::sym::CartOp& element2) const
 {
 
-   return (element1.get_cart_matrix().isApprox(element2.get_cart_matrix(), tol) &&
-            (element1.get_translation().isApprox(element2.get_translation(), tol)));
+   return (element1.matrix.isApprox(element2.matrix, tol) &&
+            (element1.translation.isApprox(element2.translation, tol)));
 }
 
 
-BinarySymOpPeriodicCompare_f::BinarySymOpPeriodicCompare_f(const Lattice& lattice, double tol) : m_lattice(lattice), tol(tol) {}
+BinaryCartOpPeriodicCompare_f::BinaryCartOpPeriodicCompare_f(const casmutils::xtal::Lattice& lattice, double tol) : m_lattice(lattice), tol(tol) {}
 
-bool BinarySymOpPeriodicCompare_f::operator()(const SymOp& element1, const SymOp& element2) const
+bool BinaryCartOpPeriodicCompare_f::operator()(const casmutils::sym::CartOp& element1, const casmutils::sym::CartOp& element2) const
 {    
-	Site temp_site1 = Site(std::string("xx"), Coordinate(element1.get_translation()));
-	Site temp_site2 = Site(std::string("xx"), Coordinate(element2.get_translation()));
+    casmutils::xtal::Site temp_site1 = casmutils::xtal::Site( casmutils::xtal::Coordinate(element1.translation),std::string("xx") );
+    casmutils::xtal::Site temp_site2 = casmutils::xtal::Site(casmutils::xtal::Coordinate(element2.translation),std::string("xx"));
     SitePeriodicCompare_f translation_comparison(temp_site1, tol, m_lattice);
     
-    SymOp symop1(element1.get_cart_matrix());
-	SymOp symop2(element2.get_cart_matrix());
+    casmutils::sym::CartOp symop1(element1.matrix);
+    casmutils::sym::CartOp symop2(element2.matrix);
 	CartesianBinaryComparator_f compare(tol);
 
 	return compare(symop1, symop2) && translation_comparison(temp_site2);
 }
 
-BinarySymOpPeriodicMultiplier_f::BinarySymOpPeriodicMultiplier_f(const Lattice& lattice, double tol) : m_lattice(lattice), tol(tol) {}
+BinaryCartOpPeriodicMultiplier_f::BinaryCartOpPeriodicMultiplier_f(const Lattice& lattice, double tol) : m_lattice(lattice), tol(tol) {}
 
-SymOp BinarySymOpPeriodicMultiplier_f::operator()(const SymOp& operation1, const SymOp& operation2) const 
+casmutils::sym::CartOp BinaryCartOpPeriodicMultiplier_f::operator()(const casmutils::sym::CartOp& operation1, const casmutils::sym::CartOp& operation2) const 
 {
-    SymOp full_operation_product = operation1 * operation2;
-    Eigen::Vector3d op_product_periodic_tranlation = bring_within(m_lattice, tol, full_operation_product.get_translation());
-    SymOp final_product(full_operation_product.get_cart_matrix(), op_product_periodic_tranlation);
+    casmutils::sym::CartOp full_operation_product = operation1 * operation2;
+    Eigen::Vector3d op_product_periodic_tranlation = bring_within(m_lattice, tol, full_operation_product.translation);
+    casmutils::sym::CartOp final_product(full_operation_product.matrix, op_product_periodic_tranlation);
     return final_product;
 }
 
-bool operator==(const SymOp& lhs, const SymOp& rhs)
+bool operator==(const casmutils::sym::CartOp& lhs, const casmutils::sym::CartOp& rhs)
 {
     CartesianBinaryComparator_f binarycompare(1e-6);
     return binarycompare(lhs, rhs);
