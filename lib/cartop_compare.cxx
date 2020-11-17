@@ -2,6 +2,7 @@
 #include <casmutils/xtal/coordinate.hpp>
 #include <casmutils/xtal/site.hpp>
 #include <casmutils/xtal/lattice.hpp>
+#include <casmutils/sym/cartop_compare.hpp>
 
 //
 //CartOp operator*(const CartOp& lhs, const CartOp& rhs)
