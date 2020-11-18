@@ -1,4 +1,4 @@
-#include "../include/casmutils/sym/fastsymmetry.hpp"
+#include "./fastsymmetry.hpp"
 #include <casmutils/sym/cartesian.hpp>
 
 AbstractSymOp::AbstractSymOp(int id, std::shared_ptr<MultTable> multiplication_table_ptr) : id(id), multiplication_table_ptr(multiplication_table_ptr) {}

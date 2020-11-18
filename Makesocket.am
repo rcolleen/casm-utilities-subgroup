@@ -1,12 +1,11 @@
 if CASMUTILS_LIBRARY
 casmutils_plugin_includedir=$(includedir)/casmutils/sym
-casmutils_plugin_include_HEADERS = plugins/casm-utilities-subgroup/include/casmutils/sym/fastsymmetry.hpp\
-                                   plugins/casm-utilities-subgroup/include/casmutils/sym/symgroup.hpp\
+casmutils_plugin_include_HEADERS = plugins/casm-utilities-subgroup/include/casmutils/sym/symgroup.hpp\
                                    plugins/casm-utilities-subgroup/include/casmutils/sym/cartop_compare.hpp
 endif
 
 libcasmutils_la_SOURCES +=\
-                            plugins/casm-utilities-subgroup/include/casmutils/sym/fastsymmetry.hpp\
+                            plugins/casm-utilities-subgroup/lib/fastsymmetry.hpp\
                             plugins/casm-utilities-subgroup/lib/fastsymmetry.cxx\
                             plugins/casm-utilities-subgroup/include/casmutils/sym/cartop_compare.hpp\
                             plugins/casm-utilities-subgroup/lib/cartop_compare.cxx\

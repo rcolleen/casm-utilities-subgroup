@@ -4,8 +4,8 @@
 #include <memory>
 #include <vector>
 #include <casmutils/sym/cartesian.hpp>
-#include "./cartop_compare.hpp"
-#include "./symgroup.hpp"
+#include <casmutils/sym/cartop_compare.hpp>
+#include <casmutils/sym/symgroup.hpp>
 
 
 typedef std::vector<std::vector<int>> MultTable;
