@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <casmutils/sym/cartesian.hpp>
+#include "./cartop_compare.hpp"
 #include "./symgroup.hpp"
 
 
@@ -16,7 +17,7 @@ public:
     int get_id() const;
     const std::shared_ptr<MultTable>& mult_table_ptr() const;
 
-    AbstractSymOp operator*(const AbstractSymOp& rhs);
+    AbstractSymOp operator*(const AbstractSymOp& rhs) const;
 
 private:
     /// ID of this particular symmetry operation, represented as integer

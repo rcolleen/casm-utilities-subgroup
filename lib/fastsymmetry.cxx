@@ -6,7 +6,7 @@ int AbstractSymOp::get_id() const { return this->id; }
 const std::shared_ptr<MultTable>& AbstractSymOp::mult_table_ptr() const { return this->multiplication_table_ptr; }
 
 
-AbstractSymOp AbstractSymOp::operator*(const AbstractSymOp& rhs)
+AbstractSymOp AbstractSymOp::operator*(const AbstractSymOp& rhs) const
 {
     if(this->multiplication_table_ptr!=rhs.mult_table_ptr())
     {
