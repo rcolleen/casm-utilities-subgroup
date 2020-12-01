@@ -47,8 +47,9 @@ CartOpCompare_f::CartOpCompare_f(casmutils::sym::CartOp input1, double tol) : el
 
 bool CartOpCompare_f::operator()(const casmutils::sym::CartOp& element2) const
 {
-    return (element1.matrix.isApprox(element2.matrix, tol) &&
-            (element1.translation.isApprox(element2.translation, tol)));
+    return ((element1.matrix.isApprox(element2.matrix, tol) &&
+            element1.translation.isApprox(element2.translation, tol)) &&
+            (element1.is_time_reversal_active==element2.is_time_reversal_active));
 }
 
 CartesianBinaryComparator_f::CartesianBinaryComparator_f(double tol) : tol(tol) {}
@@ -57,7 +58,8 @@ bool CartesianBinaryComparator_f::operator()(const casmutils::sym::CartOp& eleme
 {
 
    return (element1.matrix.isApprox(element2.matrix, tol) &&
-            (element1.translation.isApprox(element2.translation, tol)));
+            (element1.translation.isApprox(element2.translation, tol)) && 
+            (element1.is_time_reversal_active==element2.is_time_reversal_active));
 }
 
 
@@ -69,11 +71,11 @@ bool BinaryCartOpPeriodicCompare_f::operator()(const casmutils::sym::CartOp& ele
     casmutils::xtal::Site temp_site2 = casmutils::xtal::Site(casmutils::xtal::Coordinate(element2.translation),std::string("xx"));
     SitePeriodicCompare_f translation_comparison(temp_site1, tol, m_lattice);
     
-    casmutils::sym::CartOp symop1(element1.matrix);
-    casmutils::sym::CartOp symop2(element2.matrix);
+    casmutils::sym::CartOp symop1(element1.matrix,{0,0,0},false);
+    casmutils::sym::CartOp symop2(element2.matrix,{0,0,0}, false);
 	CartesianBinaryComparator_f compare(tol);
 
-	return compare(symop1, symop2) && translation_comparison(temp_site2);
+	return compare(symop1, symop2) && translation_comparison(temp_site2) && (element1.is_time_reversal_active==element2.is_time_reversal_active);
 }
 
 BinaryCartOpPeriodicMultiplier_f::BinaryCartOpPeriodicMultiplier_f(const casmutils::xtal::Lattice& lattice, double tol) : m_lattice(lattice), tol(tol) {}
@@ -82,7 +84,7 @@ casmutils::sym::CartOp BinaryCartOpPeriodicMultiplier_f::operator()(const casmut
 {
     casmutils::sym::CartOp full_operation_product = operation1 * operation2;
     Eigen::Vector3d op_product_periodic_tranlation = casmutils::xtal::bring_within(full_operation_product.translation, m_lattice);
-    casmutils::sym::CartOp final_product(full_operation_product.matrix, op_product_periodic_tranlation);
+    casmutils::sym::CartOp final_product(full_operation_product.matrix, op_product_periodic_tranlation, (operation1.is_time_reversal_active != operation2.is_time_reversal_active));
     return final_product;
 }
 
