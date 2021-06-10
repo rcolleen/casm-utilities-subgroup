@@ -24,8 +24,8 @@ VectorPeriodicCompare_f::VectorPeriodicCompare_f(const Eigen::Vector3d& vector, 
 
 bool VectorPeriodicCompare_f::operator()(const Eigen::Vector3d& other) const
 {
-    Eigen::Vector3d vector1 = casmutils::xtal::make_fractional( m_vector, m_lattice);
-    Eigen::Vector3d vector2 = casmutils::xtal::make_fractional(other,m_lattice);
+    Eigen::Vector3d vector1 = casmutils::xtal::cartesian_to_fractional( m_vector, m_lattice);
+    Eigen::Vector3d vector2 = casmutils::xtal::cartesian_to_fractional(other, m_lattice);
     Eigen::Vector3d distance_vector = vector1-vector2;
 
     for (int i=0; i<distance_vector.size(); i++){
@@ -67,8 +67,8 @@ BinaryCartOpPeriodicCompare_f::BinaryCartOpPeriodicCompare_f(const casmutils::xt
 
 bool BinaryCartOpPeriodicCompare_f::operator()(const casmutils::sym::CartOp& element1, const casmutils::sym::CartOp& element2) const
 {    
-    casmutils::xtal::Site temp_site1 = casmutils::xtal::Site( casmutils::xtal::Coordinate(element1.translation),std::string("xx") );
-    casmutils::xtal::Site temp_site2 = casmutils::xtal::Site(casmutils::xtal::Coordinate(element2.translation),std::string("xx"));
+    casmutils::xtal::Site temp_site1 = casmutils::xtal::Site( element1.translation, std::string("xx") );
+    casmutils::xtal::Site temp_site2 = casmutils::xtal::Site(element2.translation, std::string("xx"));
     SitePeriodicCompare_f translation_comparison(temp_site1, tol, m_lattice);
     
     casmutils::sym::CartOp symop1(element1.matrix,{0,0,0},false);
@@ -83,7 +83,7 @@ BinaryCartOpPeriodicMultiplier_f::BinaryCartOpPeriodicMultiplier_f(const casmuti
 casmutils::sym::CartOp BinaryCartOpPeriodicMultiplier_f::operator()(const casmutils::sym::CartOp& operation1, const casmutils::sym::CartOp& operation2) const 
 {
     casmutils::sym::CartOp full_operation_product = operation1 * operation2;
-    Eigen::Vector3d op_product_periodic_tranlation = casmutils::xtal::bring_within(full_operation_product.translation, m_lattice);
+    Eigen::Vector3d op_product_periodic_tranlation = casmutils::xtal::bring_within_lattice(casmutils::xtal::cartesian_to_fractional(full_operation_product.translation, m_lattice), m_lattice);
     casmutils::sym::CartOp final_product(full_operation_product.matrix, op_product_periodic_tranlation, (operation1.is_time_reversal_active != operation2.is_time_reversal_active));
     return final_product;
 }
